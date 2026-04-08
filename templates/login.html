@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCERT Q-Gen | Select Role</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf9f7;
+            color: #111;
+        }
+
+        .role-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .role-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+            border-color: #0f172a;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-4xl w-full text-center">
+        <a href="/" class="inline-flex items-center gap-2 text-slate-900 mb-12">
+            <span class="material-symbols-outlined text-[28px]">school</span>
+            <span class="font-extrabold text-2xl uppercase tracking-wider">NCERT Q-Gen</span>
+        </a>
+
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Who's logging in today?</h1>
+        <p class="text-slate-500 mb-12 text-lg">Select your portal to continue down your learning journey.</p>
+
+        <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+
+            <!-- Student Card -->
+            <button onclick="loginAs('student')"
+                class="role-card bg-white border-2 border-slate-200 rounded-[2rem] p-8 text-left relative overflow-hidden group">
+                <div
+                    class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6 border border-blue-100">
+                    <span class="material-symbols-outlined text-3xl">face</span>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-slate-900">Student</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-6">Access your personal tutor. Ask questions,
+                    clarify concepts, and prepare for your exams effectively.</p>
+                <div
+                    class="flex items-center text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all duration-300 gap-2">
+                    Enter Portal <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </div>
+            </button>
+
+            <!-- Teacher Card -->
+            <button onclick="loginAs('teacher')"
+                class="role-card bg-white border-2 border-slate-200 rounded-[2rem] p-8 text-left relative overflow-hidden group">
+                <div
+                    class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-6 border border-emerald-100">
+                    <span class="material-symbols-outlined text-3xl">menu_book</span>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-slate-900">Teacher</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-6">Access your curriculum designer. Generate
+                    assessments, mapped clearly to Bloom's Taxonomy.</p>
+                <div
+                    class="flex items-center text-emerald-600 font-semibold text-sm group-hover:gap-3 transition-all duration-300 gap-2">
+                    Enter Portal <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </div>
+            </button>
+
+        </div>
+    </div>
+
+    <script>
+        function loginAs(role) {
+            // Save to frontend memory
+            localStorage.setItem('userRole', role);
+
+            // Redirect to the sidebar chat interface
+            window.location.href = '/chatbot';
+        }
+    </script>
+</body>
+
+</html>

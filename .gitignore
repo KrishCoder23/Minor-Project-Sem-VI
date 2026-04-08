@@ -1,0 +1,17 @@
+# OS files
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Large Local Datasets and Models
+data/dataset.csv
+data/dataset.jsonl
+models/llm/model.gguf
+*.csv
+*.jsonl
+*.gguf
+<!DOCTYPE html>.html
+rah

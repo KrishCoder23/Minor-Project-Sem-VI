@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCERT Q-Gen | Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf9f7;
+            color: #111;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg-animate {
+            animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #94a3b8;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex overflow-hidden bg-[#faf9f7] font-sans">
+
+    <!-- CLAUDE-STYLE SIDEBAR -->
+    <aside class="w-[260px] bg-[#1e1e1e] flex flex-col text-slate-300 select-none z-50 shrink-0 h-full relative border-r border-[#2d2d2d] transition-all shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        
+        <div class="px-3 pt-4 pb-2">
+            <button class="w-full flex items-center justify-between hover:bg-[#2d2d2d] rounded-lg px-3 py-2 text-sm font-medium transition-colors text-[#ececec]">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">add</span>
+                    New chat
+                </div>
+                <div class="flex items-center justify-center w-6 h-6 rounded bg-[#2d2d2d] text-xs font-bold text-slate-400">
+                    <span class="material-symbols-outlined text-[14px]">edit_square</span>
+                </div>
+            </button>
+        </div>
+
+        <div class="flex flex-col gap-0.5 px-3 mb-6">
+            <button class="w-full flex items-center gap-2 hover:bg-[#2d2d2d] rounded-lg px-3 py-2 text-sm text-[#ececec] transition-colors">
+                <span class="material-symbols-outlined text-[18px] text-slate-400">search</span>
+                Search
+            </button>
+            <button class="w-full flex items-center gap-2 hover:bg-[#2d2d2d] rounded-lg px-3 py-2 text-sm text-[#ececec] transition-colors">
+                <span class="material-symbols-outlined text-[18px] text-slate-400">tune</span>
+                Customize
+            </button>
+        </div>
+
+        <!-- Middle Sections -->
+        <div class="flex-1 overflow-y-auto px-3 flex flex-col gap-1">
+            <div class="flex items-center justify-between group px-2 py-1 cursor-pointer mb-1">
+                <span class="text-xs font-semibold text-slate-500 group-hover:text-slate-400 transition-colors">Recents</span>
+            </div>
+            
+            <button class="w-full flex items-center justify-between group bg-[#2d2d2d] rounded-lg px-3 py-2 text-sm text-white transition-colors">
+                <div class="flex items-center gap-2 truncate">
+                    <span class="material-symbols-outlined text-[14px] text-slate-400 shrink-0">chat_bubble</span>
+                    <span class="truncate">Your first chat with NCERT</span>
+                </div>
+                <span class="material-symbols-outlined text-[16px] text-slate-400 opacity-0 group-hover:opacity-100 shrink-0">more_horiz</span>
+            </button>
+        </div>
+
+        <!-- User Profile Bottom -->
+        <div class="p-3 border-t border-[#2d2d2d] mt-auto">
+            <button class="w-full flex items-center justify-between hover:bg-[#2d2d2d] rounded-lg px-3 py-2 transition-colors">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm font-bold shrink-0 shadow-inner border border-blue-200" id="user-avatar-initial">
+                        S
+                    </div>
+                    <div class="flex flex-col items-start truncate text-left">
+                        <span class="text-[13px] font-semibold text-white truncate" id="sidebar-role-name">Student</span>
+                        <span class="text-[11px] text-slate-400">NCERT Academic Plan</span>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CHAT COLUMN -->
+    <div class="flex-1 flex flex-col h-full relative bg-[#faf9f7] overflow-hidden">
+
+    <header id="top-header"
+        class="absolute top-8 left-4 md:left-8 z-20 flex flex-col items-start opacity-0 transition-opacity duration-700 pointer-events-none">
+        <a href="/"
+            class="flex items-center gap-2 text-slate-900 hover:text-slate-600 transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-[20px]">school</span>
+            <span class="font-extrabold text-lg uppercase tracking-wide">NCERT Q-Gen</span>
+        </a>
+        <span class="text-slate-500 text-sm mt-1">Curriculum Assistant</span>
+    </header>
+
+    <main id="chat-box"
+        class="flex-1 overflow-y-auto px-4 md:px-8 pt-28 pb-32 flex flex-col gap-6 max-w-4xl mx-auto w-full scroll-smooth opacity-0 transition-opacity duration-700">
+    </main>
+
+    <div id="interaction-area"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center justify-center px-4 md:px-8 transition-all duration-700 cubic-bezier(0.25, 1, 0.5, 1)">
+
+        <div id="big-logo" class="flex flex-col items-center mb-8 transition-all duration-500 overflow-hidden">
+            <div class="flex items-center gap-3 text-slate-900">
+                <span class="material-symbols-outlined text-[40px]">school</span>
+                <span class="font-extrabold text-4xl uppercase tracking-tight">NCERT Q-Gen</span>
+            </div>
+        </div>
+
+        <div id="settings-row"
+            class="w-full max-w-2xl flex flex-wrap gap-2 mb-3 justify-center text-slate-700 text-[13px] sm:text-sm font-medium">
+            <select id="grade-sel"
+                class="bg-white/80 border border-slate-200 rounded-full px-3 py-1.5 focus:outline-none shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md">
+                <option value="Class 10">Class 10</option>
+                <option value="Class 6">Class 6</option>
+                <option value="Class 7">Class 7</option>
+                <option value="Class 8">Class 8</option>
+                <option value="Class 9">Class 9</option>
+                <option value="Class 11">Class 11</option>
+                <option value="Class 12">Class 12</option>
+            </select>
+            <select id="subject-sel"
+                class="bg-white/80 border border-slate-200 rounded-full px-3 py-1.5 focus:outline-none shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md">
+                <option value="Science">Science</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Social Science">Social Science</option>
+                <option value="English">English</option>
+            </select>
+            <select id="bloom-sel"
+                class="bg-white/80 border border-slate-200 rounded-full px-3 py-1.5 focus:outline-none shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md">
+                <option value="Understand">Understand</option>
+                <option value="Remember">Remember</option>
+                <option value="Apply">Apply</option>
+                <option value="Analyze">Analyze</option>
+                <option value="Evaluate">Evaluate</option>
+                <option value="Create">Create</option>
+            </select>
+            <button onclick="exportPDF()"
+                class="bg-white/80 border border-slate-200 rounded-full px-4 py-1.5 focus:outline-none shadow-[0_2px_10px_rgba(0,0,0,0.02)] backdrop-blur-md flex items-center gap-1 hover:bg-slate-50 transition">
+                <span class="material-symbols-outlined text-[16px]">download</span> Export PDF
+            </button>
+        </div>
+
+        <div
+            class="w-full max-w-2xl bg-white rounded-full border border-slate-200 p-1.5 flex items-center justify-between shadow-[0_8px_30px_rgba(0,0,0,0.06)] bg-white/80 backdrop-blur-md">
+
+            <input type="text" id="user-input" placeholder="Type your question..."
+                class="flex-1 bg-transparent text-slate-900 focus:outline-none focus:ring-0 text-[15px] px-4"
+                onkeypress="if(event.key === 'Enter') sendMessage()">
+
+            <button onclick="sendMessage()"
+                class="bg-[#1a1d24] hover:bg-black text-white px-5 py-2.5 rounded-full text-[15px] font-medium flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 shrink-0">
+                <span class="material-symbols-outlined text-[18px]">send</span>
+                <span class="hidden sm:inline">Send</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        let isFirstMessage = true;
+        let chatHistory = [];
+
+        window.onload = function () {
+            // Apply role dynamically
+            const savedRole = localStorage.getItem('userRole') || 'student';
+            document.getElementById('sidebar-role-name').innerText = savedRole.charAt(0).toUpperCase() + savedRole.slice(1);
+            document.getElementById('user-avatar-initial').innerText = savedRole.charAt(0).toUpperCase();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialQuery = urlParams.get('query');
+
+            if (initialQuery) {
+                userInput.value = initialQuery;
+                sendMessage();
+                window.history.replaceState({}, document.title, "/chatbot");
+            }
+        };
+
+        // --- Layout Shift Function ---
+        function triggerLayoutShift() {
+            if (!isFirstMessage) return;
+            isFirstMessage = false;
+
+            // 1. Move the interaction area to the bottom
+            const interactionArea = document.getElementById('interaction-area');
+            interactionArea.classList.remove('top-1/2', '-translate-y-1/2');
+            interactionArea.classList.add('bottom-8');
+
+            // 2. Hide the big centered logo
+            const bigLogo = document.getElementById('big-logo');
+            bigLogo.classList.add('opacity-0', 'h-0', 'mb-0', 'scale-90');
+
+            // 3. Reveal the top-left header
+            const topHeader = document.getElementById('top-header');
+            topHeader.classList.remove('opacity-0', 'pointer-events-none');
+
+            // 4. Reveal the chat box area
+            chatBox.classList.remove('opacity-0');
+        }
+
+        function exportPDF() {
+            const element = document.getElementById('chat-box');
+            // Hide typing indicators or buttons if necessary
+            html2pdf().set({
+                margin: 10,
+                filename: 'NCERT_QGen_Notes.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(element).save();
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            triggerLayoutShift(); // Move UI on first send!
+            appendUserMessage(text);
+            userInput.value = '';
+
+            const savedRole = localStorage.getItem('userRole') || 'student';
+            const reqBody = {
+                prompt: text,
+                history: chatHistory,
+                grade: document.getElementById('grade-sel').value,
+                subject: document.getElementById('subject-sel').value,
+                bloom: document.getElementById('bloom-sel').value,
+                role: savedRole
+            };
+            chatHistory.push({ role: "user", content: text });
+
+            const loadingId = appendAIMessage('', true);
+            const aiBubble = document.getElementById(loadingId);
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reqBody)
+                });
+
+                aiBubble.innerHTML = '';
+                let fullResponse = '';
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    const chunkStr = decoder.decode(value, { stream: true });
+                    const lines = chunkStr.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const dataStr = line.replace('data: ', '').trim();
+                            if (dataStr === '[DONE]') break;
+                            if (dataStr) {
+                                try {
+                                    const parsed = JSON.parse(dataStr);
+                                    if (parsed.content) {
+                                        fullResponse += parsed.content;
+                                        aiBubble.innerHTML = fullResponse.replace(/\n/g, '<br>');
+                                        scrollToBottom();
+                                    }
+                                } catch (e) { }
+                            }
+                        }
+                    }
+                }
+                chatHistory.push({ role: "assistant", content: fullResponse });
+            } catch (error) {
+                aiBubble.innerHTML = "⚠️ Error: Could not connect to the local server.";
+                aiBubble.style.color = "#ef4444";
+            }
+        }
+
+        function appendUserMessage(text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex justify-end msg-animate";
+            msgDiv.innerHTML = `
+                <div class="bg-[#1a1d24] text-white px-5 py-3.5 rounded-2xl rounded-br-sm shadow-sm max-w-[80%] text-[15px] leading-relaxed">
+                    ${text}
+                </div>
+            `;
+            chatBox.appendChild(msgDiv);
+            scrollToBottom();
+        }
+
+        function appendAIMessage(text, isLoading = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex justify-start msg-animate";
+
+            const uniqueId = 'msg-' + Math.random().toString(36).substr(2, 9);
+
+            let contentHtml = isLoading
+                ? `<div class="mt-1"><span class="dot"></span><span class="dot mx-1"></span><span class="dot"></span></div>`
+                : text;
+
+            msgDiv.innerHTML = `
+                <div class="bg-white border border-slate-200 px-5 py-4 rounded-2xl rounded-bl-sm shadow-[0_2px_10px_rgba(0,0,0,0.02)] max-w-[85%] w-full">
+                    <div class="font-bold text-slate-900 mb-2 flex items-center gap-1.5 text-[15px]">
+                        NCERT Q-Gen <span class="material-symbols-outlined text-[16px]">psychology</span> 
+                        <span class="text-slate-300 font-normal mx-1">|</span>
+                    </div>
+                    <div id="${uniqueId}" class="text-slate-700 text-[15px] leading-relaxed">
+                        ${contentHtml}
+                    </div>
+                </div>
+            `;
+
+            chatBox.appendChild(msgDiv);
+            scrollToBottom();
+            return uniqueId;
+        }
+
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+    </div>
+</body>
+
+</html>
