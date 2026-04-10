@@ -1,9 +1,8 @@
 import streamlit as st
 
-# Configure the page
 st.set_page_config(page_title="NCERT Q-Gen | Landing", layout="wide", initial_sidebar_state="collapsed")
 
-# Inject the Native HTML and CSS directly into Streamlit's DOM
+
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
